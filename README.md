@@ -26,3 +26,16 @@ To enter the virtual environment run
 To install the dependencies to a virtual environment just for this project run 
 
 `~ pip install -r requirements.txt`
+
+Nearly there, all you need to do now is tell Flask where to find the application, run 
+
+```
+export FLASK_APP=api
+export FLASK_ENV=development
+```
+
+And you're done! Run the application with 
+
+`flask run`
+
+Easy peasy.
