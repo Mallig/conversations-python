@@ -1,7 +1,7 @@
 import os
 import json
 
-from api.conversations_controller import conversations_api
+from api.messages_controller import conversations_api
 from flask import Flask, request, Response, Blueprint
 
 
