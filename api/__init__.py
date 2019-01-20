@@ -11,7 +11,10 @@ def create_app(test_config=None):
         # It’s set to 'dev' to provide a convenient value during development, but it should be overridden with a random value when deploying.
         # SECRET_KEY can be stored in instance/config.py 
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'api.sqlite'),
+        SQLALCHEMY_DATABASE_URI= os.environ['HOME'],
+        SQLALCHEMY_ECHO = True,
+        SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     )
 
     if test_config is None:
@@ -31,5 +34,9 @@ def create_app(test_config=None):
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
+
+
+    # from . import db
+    # db.init_app(app)
 
     return app
