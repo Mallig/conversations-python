@@ -1,6 +1,7 @@
 import os
+import json
 
-from flask import Flask
+from flask import Flask, request, Response
 
 
 def create_app(test_config=None):
@@ -31,5 +32,14 @@ def create_app(test_config=None):
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
+    
+    @app.route("/hello/<id>")
+    def hello_plus_id(id=None):
+        return f"Hello {id}"
+
+    @app.route("/hello", methods=['POST'])
+    def post_hello():
+        response = json.dumps({ "da response": request.get_json()['message'] }, ensure_ascii=False)
+        return Response(response, mimetype='application/json')
 
     return app
