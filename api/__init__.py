@@ -8,7 +8,7 @@ from flask import Flask, request, Response, Blueprint
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_pyfile('config.cfg')
+    app.config.from_pyfile('config.py')
     app.register_blueprint(conversations_api)
 
 
