@@ -1,13 +1,16 @@
 import os
 import json
 
-from flask import Flask, request, Response
+from api.messages_controller import conversations_api
+from flask import Flask, request, Response, Blueprint
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile('config.cfg')
+    app.register_blueprint(conversations_api)
+
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -27,13 +30,6 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
     
-    @app.route("/hello/<id>")
-    def hello_plus_id(id=None):
-        return f"Hello {id}"
-
-    @app.route("/hello", methods=['POST'])
-    def post_hello():
-        response = json.dumps({ "da response": request.get_json()['message'] }, ensure_ascii=False)
-        return Response(response, mimetype='application/json')
+    
 
     return app
