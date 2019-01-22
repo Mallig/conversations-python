@@ -14,13 +14,13 @@ def post_messages():
                                  content=json_data['content'])
 
     db.session.add(new_message)
-    
+
     try:
         db.session.commit()
         response = json.dumps({ "saved": True }, ensure_ascii=False)
         return Response(response, mimetype='application/json')
     except SQLAlchemyError as e:
-        error = str(e.orig)
+        error = str(e.orig).split('\n')[0]
         response = json.dumps({ "saved": False, "error": error }, ensure_ascii=False)
         return Response(response, mimetype='application/json')
 
