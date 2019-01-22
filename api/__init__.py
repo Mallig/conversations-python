@@ -23,6 +23,7 @@ def create_app(test_config=None):
         pass
 
     # create db instance
+    # TODO - REMOVE GLOBAL VARIABLE 
     global db
     db = SQLAlchemy(app)
     from api import models
