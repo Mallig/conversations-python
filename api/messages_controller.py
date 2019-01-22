@@ -19,7 +19,7 @@ def post_messages():
     })
     this conversation create will do one of two things:
     1) it will create a new row in the conversation/user with these people in it
-    and save the message_id, conversation_id pair in the conversation table
+    and save the 2 x user_id, conversation_id trio in the conversation table
     2) it will find the conversation between these two people and add that conversation_id
     and message_id pair in the conversation table
     '''
