@@ -1,6 +1,4 @@
-import json
-
-from flask import Flask, request, Response, Blueprint
+from flask import Flask, request, Response, Blueprint, json
 from api import db, models
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -17,13 +15,10 @@ def post_messages():
 
     try:
         db.session.commit()
-        response = json.dumps({ "saved": True }, ensure_ascii=False)
-        return Response(response, mimetype='application/json')
+        return json.jsonify({ "saved": True })
     except SQLAlchemyError as e:
         error = str(e.orig).split('\n')[0]
-        response = json.dumps({ "saved": False, "error": error }, ensure_ascii=False)
-        return Response(response, mimetype='application/json')
-
+        return json.jsonify({ "saved": False, "error": error })
 
     '''
     form_data = request.form
