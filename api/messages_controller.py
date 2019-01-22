@@ -4,13 +4,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 
 conversations_api = Blueprint('conversations_api', __name__)
+db_session = db.session
 
 @conversations_api.route("/messages", methods=['POST'])
 def post_messages():
     json_data = request.get_json()
 
     user_ids = [json_data['sender_id'], json_data['receiver_id']]
-    conversation = db.session.query(models.ConversationUserJoin.conversation_id)\
+    conversation = db_session.query(models.ConversationUserJoin.conversation_id)\
         .filter(models.ConversationUserJoin.user_id.in_(user_ids))\
         .group_by(models.ConversationUserJoin.conversation_id)\
         .having(func.count()==len(user_ids))\
@@ -20,14 +21,14 @@ def post_messages():
     if not conversation:
         # create and commit conversation to get convo id
         conversation = models.Conversation()
-        db.session.add(conversation)
-        db.session.commit()
+        db_session.add(conversation)
+        db_session.commit()
 
         conversation_join_user_1 = models.ConversationUserJoin(conversation_id = conversation.id, user_id = json_data['sender_id'])
         conversation_join_user_2 = models.ConversationUserJoin(conversation_id = conversation.id, user_id = json_data['receiver_id'])
-        db.session.add(conversation_join_user_1)
-        db.session.add(conversation_join_user_2)
-        db.session.commit()
+        db_session.add(conversation_join_user_1)
+        db_session.add(conversation_join_user_2)
+        db_session.commit()
 
         conversation_id = conversation.id
     else:
@@ -38,10 +39,10 @@ def post_messages():
                                  conversation_id = conversation_id, 
                                  content = json_data['content'])
 
-    db.session.add(new_message)
+    db_session.add(new_message)
 
     try:
-        db.session.commit()
+        db_session.commit()
         return json.jsonify({ "saved": True })
     except SQLAlchemyError as e:
         error = str(e.orig).split('\n')[0]
@@ -50,15 +51,15 @@ def post_messages():
 @conversations_api.route("/testroute", methods=['GET'])
 def test_route():
     new_conversation = models.Conversation()
-    db.session.add(new_conversation)
-    db.session.commit()
+    db_session.add(new_conversation)
+    db_session.commit()
 
     convo_join = models.ConversationUserJoin(conversation_id = 2, user_id = 1)
-    db.session.add(convo_join)
-    db.session.commit()
+    db_session.add(convo_join)
+    db_session.commit()
     convo_join = models.ConversationUserJoin(conversation_id = 2, user_id = 3)
-    db.session.add(convo_join)
-    db.session.commit()
+    db_session.add(convo_join)
+    db_session.commit()
 
     return "hello"
 

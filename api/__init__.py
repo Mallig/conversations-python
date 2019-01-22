@@ -8,6 +8,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URL'] if 'DATABASE_URL' in app.config else 'postgresql://localhost/conversations_python'
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
