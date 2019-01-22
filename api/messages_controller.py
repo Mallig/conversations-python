@@ -1,15 +1,33 @@
 from flask import Flask, request, Response, Blueprint, json
 from api import db, models
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import func
 
 conversations_api = Blueprint('conversations_api', __name__)
 
 @conversations_api.route("/messages", methods=['POST'])
 def post_messages():
     json_data = request.get_json()
-    new_message = models.Message(sender_id=json_data['sender_id'], 
-                                 receiver_id=json_data['receiver_id'], 
-                                 content=json_data['content'])
+
+    user_ids = [json_data['sender_id'], json_data['receiver_id']]
+    conversation = db.session.query(models.ConversationUserJoin.conversation_id)\
+        .filter(models.ConversationUserJoin.user_id.in_(user_ids))\
+        .group_by(models.ConversationUserJoin.conversation_id)\
+        .having(func.count()==len(user_ids))\
+        .all()
+
+    # create conversation if it doesn't exit and add users to join table
+    if conversation is None:
+        conversation = models.Conversation()
+        db.session.add(conversation)
+        db.session.commit()
+        # TODO - add ids to join table
+
+
+    # create message object with conversation_id and try to commit to database
+    new_message = models.Message(sender_id = json_data['sender_id'], 
+                                 content = json_data['content'])
+                                #  conversation_id = conversation[0], 
 
     db.session.add(new_message)
 
@@ -19,6 +37,21 @@ def post_messages():
     except SQLAlchemyError as e:
         error = str(e.orig).split('\n')[0]
         return json.jsonify({ "saved": False, "error": error })
+
+@conversations_api.route("/testroute", methods=['GET'])
+def test_route():
+    new_conversation = models.Conversation()
+    db.session.add(new_conversation)
+    db.session.commit()
+
+    convo_join = models.ConversationUserJoin(conversation_id = 2, user_id = 1)
+    db.session.add(convo_join)
+    db.session.commit()
+    convo_join = models.ConversationUserJoin(conversation_id = 2, user_id = 3)
+    db.session.add(convo_join)
+    db.session.commit()
+
+    return "hello"
 
     '''
     form_data = request.form
