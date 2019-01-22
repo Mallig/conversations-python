@@ -17,17 +17,26 @@ def post_messages():
         .all()
 
     # create conversation if it doesn't exit and add users to join table
-    if conversation is None:
+    if not conversation:
+        # create and commit conversation to get convo id
         conversation = models.Conversation()
         db.session.add(conversation)
         db.session.commit()
-        # TODO - add ids to join table
 
+        conversation_join_user_1 = models.ConversationUserJoin(conversation_id = conversation.id, user_id = json_data['sender_id'])
+        conversation_join_user_2 = models.ConversationUserJoin(conversation_id = conversation.id, user_id = json_data['receiver_id'])
+        db.session.add(conversation_join_user_1)
+        db.session.add(conversation_join_user_2)
+        db.session.commit()
+
+        conversation_id = conversation.id
+    else:
+        conversation_id = conversation[0]
 
     # create message object with conversation_id and try to commit to database
     new_message = models.Message(sender_id = json_data['sender_id'], 
+                                 conversation_id = conversation_id, 
                                  content = json_data['content'])
-                                #  conversation_id = conversation[0], 
 
     db.session.add(new_message)
 
