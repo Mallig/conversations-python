@@ -1,11 +1,18 @@
 import json
 
 from flask import Flask, request, Response, Blueprint
+from api import db, models
 
 conversations_api = Blueprint('conversations_api', __name__)
 
 @conversations_api.route("/messages", methods=['POST'])
 def post_messages():
+    json_data = request.get_json()
+    new_message = models.Message(sender_id=json_data['sender_id'], receiver_id=json_data['receiver_id'], content=json_data['content'])
+    db.session.add(new_message)
+    db.session.commit()
+    response = { "saved": True }
+    return Response({ "saved": True }, mimetype="applications/json")
     '''
     form_data = request.form
     id = Message.create({

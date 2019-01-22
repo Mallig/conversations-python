@@ -1,14 +1,12 @@
 import os
 import json
 
-from api.messages_controller import conversations_api
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.register_blueprint(conversations_api)
 
 
     if test_config is None:
@@ -29,6 +27,9 @@ def create_app(test_config=None):
     db = SQLAlchemy(app)
     from api import models
     db.create_all()
+
+    from api.messages_controller import conversations_api
+    app.register_blueprint(conversations_api)
 
     # a simple page that says hello
     @app.route('/hello')
