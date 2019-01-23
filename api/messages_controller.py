@@ -1,5 +1,7 @@
 from flask import Flask, request, Response, Blueprint, json
-from api import db, models
+from api import db
+from api.models import Message, Conversation
+from api.models import  ConversationUserJoin as JoinTable
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 
@@ -15,13 +17,13 @@ def post_messages():
     conversation = get_conversation(user_ids)
 
     if not conversation:
-        conversation = models.Conversation()
+        conversation = Conversation()
         db_session.add(conversation)
         db_session.commit()
 
         for user_id in user_ids:
-            db_session.add(models.ConversationUserJoin(conversation_id = conversation.id,
-                                                       user_id = user_id))
+            db_session.add(JoinTable(conversation_id = conversation.id,
+                                     user_id = user_id))
             
         db_session.commit()
 
@@ -30,9 +32,9 @@ def post_messages():
         conversation_id = conversation[0]
 
     # create message object with conversation_id and try to commit to database
-    new_message = models.Message(sender_id = json_data['sender_id'], 
-                                 conversation_id = conversation_id, 
-                                 content = json_data['content'])
+    new_message = Message(sender_id = json_data['sender_id'], 
+                          conversation_id = conversation_id, 
+                          content = json_data['content'])
 
     db_session.add(new_message)
 
@@ -44,51 +46,22 @@ def post_messages():
         return json.jsonify({ "saved": False, "error": error })
 
 
+@conversations_api.route("/conversations/<int:user_id>", methods=['GET'])
+def get_conversations(user_id):
+    # select conversation ids and other user ids (group by convo id)
+    # join the last message sent through each conversation
+    conversations = db_session.query(JoinTable.conversation_id)\
+        .filter(JoinTable.user_id==user_id)\
+        .group_by(JoinTable.conversation_id)\
+        .all()
+    print(conversations)
+    return 'hello'
+
+
 def get_conversation(user_ids):
-    conversation = db_session.query(models.ConversationUserJoin.conversation_id)\
-    .filter(models.ConversationUserJoin.user_id.in_(user_ids))\
-    .group_by(models.ConversationUserJoin.conversation_id)\
-    .having(func.count()==len(user_ids))\
-    .all()
+    conversation = db_session.query(JoinTable.conversation_id)\
+        .filter(JoinTable.user_id.in_(user_ids))\
+        .group_by(JoinTable.conversation_id)\
+        .having(func.count()==len(user_ids))\
+        .all()
     return conversation
-
-@conversations_api.route("/testroute", methods=['GET'])
-def test_route():
-    new_conversation = models.Conversation()
-    db_session.add(new_conversation)
-    db_session.commit()
-
-    convo_join = models.ConversationUserJoin(conversation_id = 2, user_id = 1)
-    db_session.add(convo_join)
-    db_session.commit()
-    convo_join = models.ConversationUserJoin(conversation_id = 2, user_id = 3)
-    db_session.add(convo_join)
-    db_session.commit()
-
-    return "hello"
-
-    '''
-    form_data = request.form
-    id = Message.create({
-        sender_id: form_data['sender_id],
-        content: form_data['content']
-    }).id
-    Conversation.create({
-        sender_id: form_data['sender_id'],
-        receiver_id: form_data['receiver_id'],
-        message_id: id
-    })
-    this conversation create will do one of two things:
-    1) it will create a new row in the conversation/user with these people in it
-    and save the 2 x user_id, conversation_id trio in the conversation table
-    2) it will find the conversation between these two people and add that conversation_id
-    and message_id pair in the conversation table
-    '''
-
-'''
-@conversations_api.route("/messages", methods=['POST'])
-def post_hello():
-    response = json.dumps({ "da response": request.get_json()['message'] }, ensure_ascii=False)
-    return Response(response, mimetype='application/json')
-'''
-    
