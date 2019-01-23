@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, Blueprint, json
+from flask import Flask, request, Response, Blueprint, jsonify
 from api import db
 from api.models import Message, Conversation
 from api.models import  ConversationUserJoin as JoinTable
@@ -13,7 +13,8 @@ def post_messages():
     json_data = request.get_json()
 
     # TODO - flatten this array, then multiple receiver ids can be sent and the code will still execute correctly
-    user_ids = [json_data['sender_id'], json_data['receiver_id']]
+    user_ids = [json_data['sender_id']]
+    user_ids.extend(json_data['receiver_ids'])
     conversation_id = ConversationService.get_conversation(user_ids)
 
     new_message = Message(sender_id = json_data['sender_id'], 
@@ -24,10 +25,10 @@ def post_messages():
 
     try:
         db_session.commit()
-        return json.jsonify({ "saved": True })
+        return jsonify({ "saved": True })
     except SQLAlchemyError as e:
         error = str(e.orig).split('\n')[0]
-        return json.jsonify({ "saved": False, "error": error })
+        return jsonify({ "saved": False, "error": error })
 
 
 @conversations_api.route("/conversations/<int:user_id>", methods=['GET'])
@@ -59,4 +60,4 @@ def get_conversations(user_id):
             "last_message": last_message[0]
         })
         
-    return json.jsonify(response)
+    return jsonify(response)

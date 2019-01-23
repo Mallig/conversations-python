@@ -14,8 +14,7 @@ class ConversationService:
             .all()
         
         if not conversation:
-            conv = ConversationService.create_conversation(user_ids)
-            return conv
+            return ConversationService.create_conversation(user_ids)
         else:
             return conversation[0]
 
