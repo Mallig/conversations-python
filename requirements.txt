@@ -8,9 +8,9 @@ Jinja2==2.10
 MarkupSafe==1.1.0
 more-itertools==5.0.0
 pluggy==0.8.1
+psycopg2-binary==2.7.7
 py==1.7.0
 pytest==4.1.1
 six==1.12.0
 SQLAlchemy==1.2.16
 Werkzeug==0.14.1
-psycopg2-binary==2.7.7

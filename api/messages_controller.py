@@ -10,24 +10,19 @@ db_session = db.session
 def post_messages():
     json_data = request.get_json()
 
+    # TODO - flatten this array, then multiple receiver ids can be sent and the code will still execute correctly
     user_ids = [json_data['sender_id'], json_data['receiver_id']]
-    conversation = db_session.query(models.ConversationUserJoin.conversation_id)\
-        .filter(models.ConversationUserJoin.user_id.in_(user_ids))\
-        .group_by(models.ConversationUserJoin.conversation_id)\
-        .having(func.count()==len(user_ids))\
-        .all()
+    conversation = get_conversation(user_ids)
 
-    # create conversation if it doesn't exit and add users to join table
     if not conversation:
-        # create and commit conversation to get convo id
         conversation = models.Conversation()
         db_session.add(conversation)
         db_session.commit()
 
-        conversation_join_user_1 = models.ConversationUserJoin(conversation_id = conversation.id, user_id = json_data['sender_id'])
-        conversation_join_user_2 = models.ConversationUserJoin(conversation_id = conversation.id, user_id = json_data['receiver_id'])
-        db_session.add(conversation_join_user_1)
-        db_session.add(conversation_join_user_2)
+        for user_id in user_ids:
+            db_session.add(models.ConversationUserJoin(conversation_id = conversation.id,
+                                                       user_id = user_id))
+            
         db_session.commit()
 
         conversation_id = conversation.id
@@ -47,6 +42,15 @@ def post_messages():
     except SQLAlchemyError as e:
         error = str(e.orig).split('\n')[0]
         return json.jsonify({ "saved": False, "error": error })
+
+
+def get_conversation(user_ids):
+    conversation = db_session.query(models.ConversationUserJoin.conversation_id)\
+    .filter(models.ConversationUserJoin.user_id.in_(user_ids))\
+    .group_by(models.ConversationUserJoin.conversation_id)\
+    .having(func.count()==len(user_ids))\
+    .all()
+    return conversation
 
 @conversations_api.route("/testroute", methods=['GET'])
 def test_route():
