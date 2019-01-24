@@ -3,10 +3,12 @@ import json
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URL'] if 'DATABASE_URL' in app.config else 'postgresql://localhost/conversations_python'
 
