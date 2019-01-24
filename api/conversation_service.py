@@ -7,12 +7,19 @@ from sqlalchemy import func
 
 class ConversationService:
     def get_conversation(user_ids):
-        conversation = db.session.query(JoinTable.conversation_id)\
-            .filter(JoinTable.user_id.in_(user_ids))\
-            .group_by(JoinTable.conversation_id)\
-            .having(func.count()==len(user_ids))\
-            .all()
-        
+        query = f"""SELECT conversation_id
+                    FROM (
+                        SELECT conversation_id, COUNT(user_id)
+                        FROM conversation_user_join
+                        WHERE conversation_id in (
+                            SELECT DISTINCT(conversation_id)
+                            FROM conversation_user_join
+                            WHERE user_id
+                            IN {convert_to_string(user_ids)}
+                        ) GROUP BY conversation_id ORDER BY count
+                    ) AS subq LIMIT 1;"""
+        conversation = db.session.execute(query).fetchone()
+
         if not conversation:
             return ConversationService.create_conversation(user_ids)
         elif len(conversation) > 1:
@@ -49,3 +56,10 @@ class ConversationService:
             .filter(JoinTable.conversation_id==convo_id)\
             .all()
         return len(count)
+
+    def convert_to_string(arr):
+        return str.replace(
+            str.replace(
+                str(arr), '[', "("
+            ), "]", ")"
+        )

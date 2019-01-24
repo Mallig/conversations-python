@@ -31,8 +31,8 @@ def create_app(test_config=None):
     db = SQLAlchemy(app)
     from api import models
     db.create_all()
-
-    from api.messages_controller import conversation_api
+    
+    from api.conversation_controller import conversation_api
     app.register_blueprint(conversation_api)
 
     # a simple page that says hello
