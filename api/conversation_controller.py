@@ -5,10 +5,10 @@ from api.models import  ConversationUserJoin as JoinTable
 from sqlalchemy.exc import SQLAlchemyError
 from api.conversation_service import ConversationService
 
-conversations_api = Blueprint('conversations_api', __name__)
+conversation_api = Blueprint('conversation_api', __name__)
 db_session = db.session
 
-@conversations_api.route("/conversation/<int:conversation_id>", methods=["GET"])
+@conversation_api.route("/conversation/<int:conversation_id>", methods=["GET"])
 def get_single_conversation(conversation_id):
     conversation = db_session.query(Message)\
         .filter(Message.conversation_id==conversation_id)\
@@ -26,7 +26,7 @@ def get_single_conversation(conversation_id):
     return jsonify(response)
 
 
-@conversations_api.route("/messages", methods=['POST'])
+@conversation_api.route("/messages", methods=['POST'])
 def post_messages():
     json_data = request.get_json()
     user_ids = [json_data['sender_id']]
@@ -48,15 +48,15 @@ def post_messages():
         return jsonify({ "saved": False, "error": error })
 
 
-@conversations_api.route("/conversations/<int:user_id>", methods=['GET'])
-def get_conversations(user_id):
-    conversations = db_session.query(JoinTable.conversation_id)\
+@conversation_api.route("/conversation/<int:user_id>", methods=['GET'])
+def get_conversation(user_id):
+    conversation = db_session.query(JoinTable.conversation_id)\
         .filter(JoinTable.user_id==user_id)\
         .all()
 
     response = []
 
-    for convo_id in conversations:
+    for convo_id in conversation:
         user_ids = db_session.query(JoinTable.user_id)\
             .filter(JoinTable.conversation_id==convo_id[0])\
             .all()

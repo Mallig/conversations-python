@@ -10,7 +10,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URL'] if 'DATABASE_URL' in app.config else 'postgresql://localhost/conversations_python'
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URL'] if 'DATABASE_URL' in app.config else 'postgresql://localhost/conversation_python'
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -32,8 +32,8 @@ def create_app(test_config=None):
     from api import models
     db.create_all()
 
-    from api.messages_controller import conversations_api
-    app.register_blueprint(conversations_api)
+    from api.messages_controller import conversation_api
+    app.register_blueprint(conversation_api)
 
     # a simple page that says hello
     @app.route('/hello')
