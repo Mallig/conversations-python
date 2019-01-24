@@ -8,13 +8,29 @@ from api.conversation_service import ConversationService
 conversations_api = Blueprint('conversations_api', __name__)
 db_session = db.session
 
+@conversations_api.route("/conversation/<int:conversation_id>", methods=["GET"])
+def get_single_conversation(conversation_id):
+    conversation = db_session.query(Message)\
+        .filter(Message.conversation_id==conversation_id)\
+        .order_by(Message.created_at)\
+        .all()
+    
+    response = []
+    for message in conversation:
+        response.append({
+            "sender_id": message.sender_id,
+            "content": message.content
+        })
+
+    return jsonify(response)
+
+
 @conversations_api.route("/messages", methods=['POST'])
 def post_messages():
     json_data = request.get_json()
-
-    # TODO - flatten this array, then multiple receiver ids can be sent and the code will still execute correctly
     user_ids = [json_data['sender_id']]
     user_ids.extend(json_data['receiver_ids'])
+
     conversation_id = ConversationService.get_conversation(user_ids)
 
     new_message = Message(sender_id = json_data['sender_id'], 
