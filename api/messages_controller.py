@@ -19,7 +19,8 @@ def get_single_conversation(conversation_id):
     for message in conversation:
         response.append({
             "sender_id": message.sender_id,
-            "content": message.content
+            "content": message.content,
+            "id": message.id
         })
 
     return jsonify(response)
