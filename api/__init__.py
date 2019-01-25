@@ -4,6 +4,7 @@ import json
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from api.database import db
 
 def create_app(test_config=None):
     # create and configure the app
@@ -27,9 +28,9 @@ def create_app(test_config=None):
 
     # create db instance
     # TODO - REMOVE GLOBAL VARIABLE 
-    global db
-    db = SQLAlchemy(app)
-    from api import models
+    # from api.models import db
+    db.init_app(app)
+    db.app = app
     db.create_all()
     
     from api.conversation_controller import conversation_api

@@ -15,11 +15,14 @@ class ConversationService:
                             SELECT DISTINCT(conversation_id)
                             FROM conversation_user_join
                             WHERE user_id
-                            IN {convert_to_string(user_ids)}
+                            IN {ConversationService.convert_to_string(user_ids)}
                         ) GROUP BY conversation_id ORDER BY count
                     ) AS subq LIMIT 1;"""
         conversation = db.session.execute(query).fetchone()
 
+        print('************')
+        print(conversation)
+        print('************')
         if not conversation:
             return ConversationService.create_conversation(user_ids)
         elif len(conversation) > 1:
