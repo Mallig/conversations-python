@@ -26,9 +26,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # create db instance
-    # TODO - REMOVE GLOBAL VARIABLE 
-    # from api.models import db
+    # add app to db instance
+    from api import models
     db.init_app(app)
     db.app = app
     db.create_all()

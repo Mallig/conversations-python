@@ -11,13 +11,14 @@ class ConversationService:
                     FROM (
                         SELECT conversation_id, COUNT(user_id)
                         FROM conversation_user_join
-                        WHERE conversation_id in (
+                        WHERE conversation_id IN (
                             SELECT DISTINCT(conversation_id)
                             FROM conversation_user_join
                             WHERE user_id
                             IN {ConversationService.convert_to_string(user_ids)}
-                        ) GROUP BY conversation_id ORDER BY count
-                    ) AS subq LIMIT 1;"""
+                        ) GROUP BY conversation_id
+                    ) AS subq 
+                    WHERE subq.count={len(user_ids)};"""
         conversation = db.session.execute(query).fetchone()
 
         print('************')
