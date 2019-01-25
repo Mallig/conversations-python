@@ -2,12 +2,13 @@ from api import db
 from api.models import Conversation, Message
 from api.models import ConversationUserJoin as JoinTable
 from sqlalchemy import func
+import numpy as np
 
 # TODO - declare methods such that line 17 & 27 don't need ConversationService prepended
 
 class ConversationService:
     def get_conversation(user_ids):
-        query = f"""SELECT conversation_id
+        query = f"""SELECT conversation_id 
                     FROM (
                         SELECT conversation_id, COUNT(user_id)
                         FROM conversation_user_join
@@ -16,30 +17,25 @@ class ConversationService:
                             FROM conversation_user_join
                             WHERE user_id
                             IN {ConversationService.convert_to_string(user_ids)}
-                        ) GROUP BY conversation_id
-                    ) AS subq 
-                    WHERE subq.count={len(user_ids)};"""
-        conversation = db.session.execute(query).fetchone()
+                        ) GROUP BY conversation_id 
+                        ORDER BY count
+                    ) as subq where subq.count={len(user_ids)};"""
 
-        print('************')
-        print(conversation)
-        print('************')
-        if not conversation:
-            return ConversationService.create_conversation(user_ids)
-        elif len(conversation) > 1:
-            for convo in conversation:
-                print(convo)
-                num_of_participants = ConversationService.num_of_participants(convo[0])
-                if num_of_participants == len(user_ids):
-                    found_convo = True
-                    return convo[0]
-                else: 
-                    found_convo = False
+        conversation = db.session.execute(query).fetchall()
+        conversation_id = None
+        user_ids.sort()
+        for convo in conversation:
+            res = db.session.execute(f"""SELECT user_id FROM conversation_user_join WHERE conversation_id={convo[0]};""").fetchall()
+            arr = []
+            for r in res:
+                arr.append(r[0])
 
-            if not found_convo:
-                return ConversationService.create_conversation(user_ids)
-        else:
-            return conversation[0]
+            arr.sort()
+            if np.array_equal(arr, user_ids):
+                conversation_id = convo[0]
+                break
+                
+        return ConversationService.create_conversation(user_ids) if conversation_id == None else conversation_id
 
     def create_conversation(user_ids):
         conversation = Conversation()

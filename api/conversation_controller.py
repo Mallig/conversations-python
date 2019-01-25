@@ -48,7 +48,7 @@ def post_messages():
         return jsonify({ "saved": False, "error": error })
 
 
-@conversation_api.route("/conversation/<int:user_id>", methods=['GET'])
+@conversation_api.route("/conversation/<int:user_id>/latest", methods=['GET'])
 def get_conversation(user_id):
     conversation = db_session.query(JoinTable.conversation_id)\
         .filter(JoinTable.user_id==user_id)\
