@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from api.database import db
+from api import db
+
 class Conversation(db.Model):
     __tablename__ = 'conversation'
     id = db.Column(db.Integer, primary_key=True)

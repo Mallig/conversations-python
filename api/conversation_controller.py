@@ -8,8 +8,27 @@ from api.conversation_service import ConversationService
 conversation_api = Blueprint('conversation_api', __name__)
 db_session = db.session
 
-@conversation_api.route("/conversation/<int:conversation_id>", methods=["GET"])
-def get_single_conversation(conversation_id):
+@conversation_api.route("/conversation/<int:user_id_one>/<int:user_id_two>", methods=["GET"])
+def get_single_conversation(user_id_one, user_id_two):
+    user_ids = [user_id_one, user_id_two]
+    conversation_id = ConversationService.get_conversation(user_ids)
+    conversation = db_session.query(Message)\
+        .filter(Message.conversation_id==conversation_id)\
+        .order_by(Message.created_at)\
+        .all()
+    
+    response = []
+    for message in conversation:
+        response.append({
+            "sender_id": message.sender_id,
+            "content": message.content,
+            "id": message.id
+        })
+
+    return jsonify(response)
+
+@conversation_api.route("/conversation/<int:conversation_id>/id", methods=["GET"])
+def get_single_conversation_by_id(conversation_id):
     conversation = db_session.query(Message)\
         .filter(Message.conversation_id==conversation_id)\
         .order_by(Message.created_at)\
@@ -32,7 +51,7 @@ def post_messages():
     user_ids = [json_data['sender_id']]
     user_ids.extend(json_data['receiver_ids'])
 
-    conversation_id = ConversationService.get_conversation(user_ids)
+    conversation_id = ConversationService.find_or_create_conversation(user_ids)
 
     new_message = Message(sender_id = json_data['sender_id'], 
                           conversation_id = conversation_id, 
@@ -74,7 +93,7 @@ def get_conversation(user_id):
         response.append({
             "conversation_id": convo_id[0],
             "participant_ids": participants,
-            "last_message": last_message[0]
+            "last_message": last_message[0] if last_message else None
         })
         
     return jsonify(response)
