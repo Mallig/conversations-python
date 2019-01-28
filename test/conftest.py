@@ -13,16 +13,18 @@ def client(app):
 
 @pytest.fixture
 def setup_database():
-    print('in the database setup fixture')
     clear_database_tables(db)
-    seed_database(db)
+
+@pytest.fixture
+def seed_database():
+    add_one_conversation(db)
 
 
 def clear_database_tables(db):
     db.drop_all()
     db.create_all()
 
-def seed_database(db):
+def add_one_conversation(db):
     from api.models import Message, Conversation, ConversationUserJoin
 
     convo = Conversation()
