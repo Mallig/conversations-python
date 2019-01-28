@@ -19,6 +19,10 @@ def setup_database():
 def seed_database():
     add_one_conversation(db)
 
+@pytest.fixture
+def seed_with_conversations():
+    add_latest_conversations()
+
 
 def clear_database_tables(db):
     db.drop_all()
@@ -35,10 +39,30 @@ def add_one_conversation(db):
     db.session.add(ConversationUserJoin(conversation_id = convo.id, user_id = 2))
     db.session.commit()
 
-    from data import conversation
-    for message in conversation:
+    from data import conversation_seed
+    for message in conversation_seed:
         db.session.add(Message(
             sender_id = message['sender_id'],
             conversation_id = convo.id,
             content = message['content']
         ))
+
+def add_latest_conversations():
+    from api.models import Message, Conversation, ConversationUserJoin
+    from data import latest_conversations_seed
+    for message in latest_conversations_seed:
+        convo = Conversation()
+        db.session.add(convo)
+        db.session.commit()
+
+        db.session.add(ConversationUserJoin(conversation_id = convo.id, user_id = 1))
+        db.session.add(ConversationUserJoin(conversation_id = convo.id, user_id = message['receiver_ids'][0]))
+        db.session.commit()
+
+        db.session.add(Message(
+            sender_id = message['sender_id'],
+            conversation_id = convo.id,
+            content = message['content']
+        ))
+        db.session.commit()
+
