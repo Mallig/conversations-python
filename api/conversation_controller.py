@@ -8,25 +8,6 @@ from api.conversation_service import ConversationService
 conversation_api = Blueprint('conversation_api', __name__)
 db_session = db.session
 
-@conversation_api.route("/conversation/<int:user_id_one>/<int:user_id_two>", methods=["GET"])
-def get_single_conversation(user_id_one, user_id_two):
-    user_ids = [user_id_one, user_id_two]
-    conversation_id = ConversationService.get_conversation(user_ids)
-    conversation = db_session.query(Message)\
-        .filter(Message.conversation_id==conversation_id)\
-        .order_by(Message.created_at)\
-        .all()
-    
-    response = []
-    for message in conversation:
-        response.append({
-            "sender_id": message.sender_id,
-            "content": message.content,
-            "id": message.id
-        })
-
-    return jsonify(response)
-
 @conversation_api.route("/conversation/<int:conversation_id>/id", methods=["GET"])
 def get_single_conversation_by_id(conversation_id):
     conversation = db_session.query(Message)\
