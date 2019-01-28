@@ -11,15 +11,17 @@ Python can be installed with
 
 `~ brew install python`
 
-This will also install pip - the python package installer, and venv - package manager for python projects.
+This will also install pip - the python package installer, and venv - environment manager for python projects.
 
 If you want to create a virtual environment in which to manage app dependencies `cd` to the project directory and run
 
-`~ python3 -m venv .`
+`~ python3 -m venv environment`
+
+This will create a directory on the project root called 'environment', containing a key pointing to the Python installation used in the command along with scripts (in bin/) and site packages.
 
 To enter the virtual environment run
 
-`~ source bin/activate` 
+`~ source venv/bin/activate` 
  
 (run `~ deactivate` to exit venv)
 
@@ -29,9 +31,9 @@ To install the dependencies to a virtual environment just for this project run
 
 Nearly there, all you need to do now is tell Flask where to find the application, run 
 
-```
-export FLASK_APP=api
-export FLASK_ENV=development
+```zsh
+~ export FLASK_APP=api
+~ export FLASK_ENV=development
 ```
 
 And you're done! Run the application with 
@@ -39,3 +41,11 @@ And you're done! Run the application with
 `flask run`
 
 Easy peasy.
+
+## Running Tests
+
+Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Run them with the command:
+
+`python -m pytest --cov=api test/`
+
+add the flag `-v` or `-vv` from more detail
