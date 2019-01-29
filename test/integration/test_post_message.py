@@ -36,3 +36,21 @@ class TestApp:
         res = client.post('/messages', data=json.dumps(data), headers=headers)
         assert res.status_code == 200
         assert res.json == { 'saved': True }
+
+    def test_post_invalid_message(self, client, setup_database):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        data = {
+            'sender_id': 1,
+            'receiver_ids': [
+                2
+            ],
+            'content': None
+        }
+        res = client.post('/messages', data=json.dumps(data), headers=headers)
+        assert res.status_code == 200
+        assert res.json == { 'error': 'null value in column "content" violates not-null constraint',
+                             'saved': False }
