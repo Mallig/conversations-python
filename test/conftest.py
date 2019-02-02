@@ -1,10 +1,19 @@
 import pytest
-from api import create_app, db
+from api import create_app
+from flask_sqlalchemy import SQLAlchemy
+from api.database import db
 
-@pytest.fixture
-def app():
-    app = create_app('test_config.py')
-    app.debug = True
+@pytest.fixture(scope='session')
+def _db():
+    '''
+    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
+    database connection.
+    '''
+    return db
+
+@pytest.fixture(scope='session')
+def app(db=db):
+    app = create_app('test_config.py', db)
     return app
 
 @pytest.fixture
@@ -14,6 +23,7 @@ def client(app):
 @pytest.fixture
 def setup_database():
     clear_database_tables(db)
+    seed_database
 
 @pytest.fixture
 def seed_database():
@@ -23,6 +33,31 @@ def seed_database():
 def seed_with_conversations():
     add_latest_conversations()
 
+@pytest.fixture(scope='session')
+def database(request):
+    '''
+    Create a Postgres database for the tests, and drop it when the tests are done.
+    '''
+    pg_host = DB_OPTS.get("host")
+    pg_port = DB_OPTS.get("port")
+    pg_user = DB_OPTS.get("username")
+    pg_db = DB_OPTS["database"]
+
+    init_postgresql_database(pg_user, pg_host, pg_port, pg_db)
+
+    @request.addfinalizer
+    def drop_database():
+        drop_postgresql_database(pg_user, pg_host, pg_port, pg_db, 9.6)
+
+# @pytest.fixture(scope='session')
+# def _db():
+#     '''
+#     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
+#     database connection.
+#     '''
+#     db = SQLAlchemy()
+
+#     return db
 
 def clear_database_tables(db):
     db.drop_all()

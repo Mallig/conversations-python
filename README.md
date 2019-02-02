@@ -44,7 +44,7 @@ Easy peasy.
 
 ## Running Tests
 
-Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Run them with the command:
+Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Make sure the virtual environment has been activated then run the tests with:
 
 `python -m pytest --cov=api test/`
 

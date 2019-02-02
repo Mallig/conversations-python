@@ -5,12 +5,14 @@ from sqlalchemy import func
 
 # TODO - declare methods such that line 17 & 27 don't need ConversationService prepended
 
-class ConversationService:
-    def find_or_create_conversation(user_ids):
-        conversation_id = ConversationService.get_conversation(user_ids)
-        return ConversationService.create_conversation(user_ids) if not conversation_id else conversation_id
+db_session = db.session
 
-    def get_conversation(user_ids):
+class ConversationService:
+    def find_or_create_conversation(user_ids, db_session=db_session):
+        conversation_id = ConversationService.get_conversation(user_ids, db_session=db_session)
+        return ConversationService.create_conversation(user_ids, db_session=db_session) if not conversation_id else conversation_id
+
+    def get_conversation(user_ids, db_session=db_session):
         first_query = f"""SELECT DISTINCT(conversation_id)
                             FROM conversation_user_join
                             WHERE user_id
@@ -35,22 +37,22 @@ class ConversationService:
                     WHERE subq.provided_users=subq.total_users
                     AND subq.total_users={len(user_ids)};"""
 
-        conversation_id = db.session.execute(query).fetchall()
+        conversation_id = db_session.execute(query).fetchall()
         return None if not conversation_id else conversation_id[0][0]
 
-    def create_conversation(user_ids):
+    def create_conversation(user_ids, db_session=db_session):
         conversation = Conversation()
-        db.session.add(conversation)
-        db.session.commit()
+        db_session.add(conversation)
+        db_session.commit()
 
-        ConversationService.create_join_rows(user_ids, conversation.id)
+        ConversationService.create_join_rows(user_ids, conversation.id, db_session)
         return conversation.id
 
-    def create_join_rows(user_ids, convo_id):
+    def create_join_rows(user_ids, convo_id, db_session=db_session):
         for user_id in user_ids:
-            db.session.add(JoinTable(conversation_id = convo_id,
+            db_session.add(JoinTable(conversation_id = convo_id,
                                      user_id = user_id))
-        db.session.commit()
+        db_session.commit()
 
     def convert_to_string(arr):
         return str.replace(
