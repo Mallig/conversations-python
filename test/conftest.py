@@ -5,10 +5,6 @@ from api.database import db
 
 @pytest.fixture(scope='session')
 def _db():
-    '''
-    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
-    database connection.
-    '''
     return db
 
 @pytest.fixture(scope='session')
@@ -35,9 +31,6 @@ def seed_with_conversations():
 
 @pytest.fixture(scope='session')
 def database(request):
-    '''
-    Create a Postgres database for the tests, and drop it when the tests are done.
-    '''
     pg_host = DB_OPTS.get("host")
     pg_port = DB_OPTS.get("port")
     pg_user = DB_OPTS.get("username")
@@ -48,16 +41,6 @@ def database(request):
     @request.addfinalizer
     def drop_database():
         drop_postgresql_database(pg_user, pg_host, pg_port, pg_db, 9.6)
-
-# @pytest.fixture(scope='session')
-# def _db():
-#     '''
-#     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
-#     database connection.
-#     '''
-#     db = SQLAlchemy()
-
-#     return db
 
 def clear_database_tables(db):
     db.drop_all()

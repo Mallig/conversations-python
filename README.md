@@ -5,6 +5,30 @@ The purpose of this API is to provide a clone of WhatsApp with groups of message
 
 This project is using Flask, Postgresql with SQLAlchemy.
 
+## How it Works
+
+The API utilises the SQLAlchemy ORM to create three models inside a Postgresql database. 
+ * Message
+ * Conversation
+ * ConversationUserJoin
+
+A Separate Ruby API exists to handle user models, using a different database, therefore the join table has to be manually created and maintained.
+
+Users sign in on the front end React app, the app sends a GET request to the python API for the most recent conversations the current user is in. The app also GET requests the messages for the most recent conversation the user had. Users can then send POST requests to create new messages.
+
+#### Conversation Controller
+
+There are three routes:
+ * GET messages from a conversation
+ * GET users most recent message for all conversations
+ * POST new message in conversation
+
+Messages are sent with 'receiver_ids' and a 'sender_id', these are used to find which conversation to attribute the message to.
+
+#### Conversation Service
+
+The method written to find a conversation between a group of users became a bit complex to imagine using the ORM tool so it was written in SQL. Hopefully this will be converted into methods on the ORM. The SQL query is made up of three select statements each querying a table returned by the last, returned is either a conversation id for the conversation between a group of users, or nothing. If no conversation id is returned, a conversation is created and the user ids of those involved are stored in the join table.
+
 ## Running the API
 
 Python can be installed with
