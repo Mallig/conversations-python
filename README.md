@@ -15,9 +15,9 @@ This will also install pip - the python package installer, and venv - environmen
 
 If create a virtual environment in which to manage app dependencies, `cd` to the project directory and run
 
-`~ python3 -m <venv_name> environment`
+`~ python3 -m venv <venv_name>`
 
-This will create a directory on the project root called 'environment', containing a key pointing to the Python installation used in the command along with scripts (in bin/) and site packages.
+This will create a directory on the project root by the name you choose, containing a key pointing to the Python installation used in the command along with scripts (in bin/) and site packages.
 
 To enter the virtual environment run
 
