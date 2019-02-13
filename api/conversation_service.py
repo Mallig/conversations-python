@@ -9,10 +9,10 @@ db_session = db.session
 
 class ConversationService:
     def find_or_create_conversation(user_ids, db_session=db_session):
-        conversation_id = ConversationService.get_conversation(user_ids, db_session=db_session)
+        conversation_id = ConversationService.get_conversation_id(user_ids, db_session=db_session)
         return ConversationService.create_conversation(user_ids, db_session=db_session) if not conversation_id else conversation_id
 
-    def get_conversation(user_ids, db_session=db_session):
+    def get_conversation_id(user_ids, db_session=db_session):
         first_query = f"""SELECT DISTINCT(conversation_id)
                             FROM conversation_user_join
                             WHERE user_id
@@ -60,3 +60,21 @@ class ConversationService:
                 str(arr), '[', "("
             ), "]", ")"
         )
+
+    def conversation_messages(conversation_id):
+        messages = db_session.query(Message)\
+        .filter(Message.conversation_id==conversation_id)\
+        .order_by(Message.created_at)\
+        .all()
+
+        return ConversationService.parse_conversation_messages(messages)
+
+    def parse_conversation_messages(sqlalchemy_messages):
+        response = []
+        for message in sqlalchemy_messages:
+            response.append({
+                "sender_id": message.sender_id,
+                "content": message.content,
+                "id": message.id
+            })
+        return response

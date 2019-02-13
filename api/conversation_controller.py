@@ -10,18 +10,7 @@ db_session = db.session
 
 @conversation_api.route("/conversation/<int:conversation_id>/id", methods=["GET"])
 def get_single_conversation_by_id(conversation_id):
-    conversation = db_session.query(Message)\
-        .filter(Message.conversation_id==conversation_id)\
-        .order_by(Message.created_at)\
-        .all()
-    
-    response = []
-    for message in conversation:
-        response.append({
-            "sender_id": message.sender_id,
-            "content": message.content,
-            "id": message.id
-        })
+    response = ConversationService.conversation_messages(conversation_id)
 
     return jsonify(response)
 
