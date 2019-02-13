@@ -119,7 +119,14 @@ Run `~ deactivate` to exit the venv, when starting up the app again you must act
 
 ## Running Tests
 
-Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Make sure the virtual environment has been activated then run the tests with:
+Before running the tests you must create a test database and config file
+
+```bash
+~ touch instance/test_config.py
+~ echo "SQLALCHEMY_DATABASE_URI='postgresql://localhost:5432/conversation_python_test'" >> instance/test_config.py
+~ createdb conversation_python_test
+```
+Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Make sure the virtual environment has been activated then run the tests
 
 ```bash
 ~ python -m pytest --cov=api test/
@@ -127,4 +134,4 @@ Tests are written using pytest with help from pytest-flask, and coverage from py
 
 add the flag `-v` or `-vv` from more detail
 
-Tests achieve 100% coverage through integration tests, 74% through unit tests as the conversation controller is not yet tested.
+Tests achieve 100% coverage through integration tests, 72% through unit tests as the conversation controller is not yet tested.
