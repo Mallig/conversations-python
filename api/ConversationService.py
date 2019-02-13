@@ -1,7 +1,7 @@
 from api import db
 from api.models import Conversation, Message
 from api.models import ConversationUserJoin as JoinTable
-from sqlalchemy import func
+from sqlalchemy import func, and_
 
 db_session = db.session
 
@@ -75,3 +75,35 @@ def parse_conversation_messages(sqlalchemy_messages):
             "id": message.id
         })
     return response
+
+def get_conversation_interlocutors(convo_id, user_id):
+    user_ids = db_session.query(JoinTable.user_id)\
+    .filter(and_(JoinTable.conversation_id==convo_id[0], JoinTable.user_id!=user_id))\
+    .all()
+
+    return [i[0] for i in user_ids]
+
+def get_conversation_latest_message(convo_id):
+    return db_session.query(Message.content)\
+    .filter(Message.conversation_id==convo_id[0])\
+    .order_by(Message.created_at.desc())\
+    .first()
+
+def construct_conversation(convo_id, user_id):
+    interlocutors = get_conversation_interlocutors(convo_id, user_id)
+    latest_message = get_conversation_latest_message(convo_id)
+
+    return {
+        "conversation_id": convo_id[0],
+        "participant_ids": interlocutors,
+        "last_message": latest_message[0] if latest_message else None
+    }
+
+def get_latest_conversations(user_id):
+    conversations = db_session.query(JoinTable.conversation_id)\
+        .filter(JoinTable.user_id==user_id)\
+        .all()
+
+    response = map(lambda convo_id: construct_conversation(convo_id, user_id) ,conversations)
+
+    return list(response)

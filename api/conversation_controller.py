@@ -39,31 +39,5 @@ def post_messages():
 
 @conversation_api.route("/conversation/<int:user_id>/latest", methods=['GET'])
 def get_conversation(user_id):
-    conversation = db_session.query(JoinTable.conversation_id)\
-        .filter(JoinTable.user_id==user_id)\
-        .all()
-
-    response = []
-
-    for convo_id in conversation:
-        user_ids = db_session.query(JoinTable.user_id)\
-            .filter(JoinTable.conversation_id==convo_id[0])\
-            .all()
-
-        participants = []
-        for id in user_ids:
-            if id[0] != user_id:
-                participants.append(id[0])
-
-        last_message = db_session.query(Message.content)\
-            .filter(Message.conversation_id==convo_id[0])\
-            .order_by(Message.created_at.desc())\
-            .first()
-
-        response.append({
-            "conversation_id": convo_id[0],
-            "participant_ids": participants,
-            "last_message": last_message[0] if last_message else None
-        })
-        
+    response = ConversationService.get_latest_conversations(user_id)
     return jsonify(response)
