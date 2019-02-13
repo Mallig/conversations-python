@@ -2,6 +2,7 @@ from api import db
 from api.models import Conversation, Message
 from api.models import ConversationUserJoin as JoinTable
 from sqlalchemy import func, and_
+from sqlalchemy.exc import SQLAlchemyError
 
 db_session = db.session
 
@@ -58,7 +59,7 @@ def convert_to_string(arr):
         ), "]", ")"
     )
 
-def conversation_messages(conversation_id):
+def conversation_messages(conversation_id, db_session=db_session):
     messages = db_session.query(Message)\
     .filter(Message.conversation_id==conversation_id)\
     .order_by(Message.created_at)\
@@ -76,14 +77,14 @@ def parse_conversation_messages(sqlalchemy_messages):
         })
     return response
 
-def get_conversation_interlocutors(convo_id, user_id):
+def get_conversation_interlocutors(convo_id, user_id, db_session=db_session):
     user_ids = db_session.query(JoinTable.user_id)\
     .filter(and_(JoinTable.conversation_id==convo_id[0], JoinTable.user_id!=user_id))\
     .all()
 
     return [i[0] for i in user_ids]
 
-def get_conversation_latest_message(convo_id):
+def get_conversation_latest_message(convo_id, db_session=db_session):
     return db_session.query(Message.content)\
     .filter(Message.conversation_id==convo_id[0])\
     .order_by(Message.created_at.desc())\
@@ -99,7 +100,7 @@ def construct_conversation(convo_id, user_id):
         "last_message": latest_message[0] if latest_message else None
     }
 
-def get_latest_conversations(user_id):
+def get_latest_conversations(user_id, db_session=db_session):
     conversations = db_session.query(JoinTable.conversation_id)\
         .filter(JoinTable.user_id==user_id)\
         .all()
@@ -107,3 +108,15 @@ def get_latest_conversations(user_id):
     response = map(lambda convo_id: construct_conversation(convo_id, user_id) ,conversations)
 
     return list(response)
+
+def create_and_commit_message(json_data, conversation_id, db_session=db_session):
+    db_session.add(Message(sender_id = json_data['sender_id'], 
+                          conversation_id = conversation_id, 
+                          content = json_data['content']))
+    
+    try:
+        db_session.commit()
+        return { "saved": True }
+    except SQLAlchemyError as e:
+        error = str(e.orig).split('\n')[0]
+        return { "saved": False, "error": error }
