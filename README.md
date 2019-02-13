@@ -33,7 +33,7 @@ The method written to find a conversation between a group of users became a bit 
 
 Here is the series of commands to download and run the app, explanations for each step follow.
 
-```shell
+```bash
 ~ git clone https://github.com/Mallig/conversations-python.git
 ~ cd conversations-python
 ~ mkdir instance
@@ -50,7 +50,7 @@ Here is the series of commands to download and run the app, explanations for eac
 
 Python can be installed with
 
-```shell
+```bash
 ~ brew install python
 ```
 
@@ -68,7 +68,7 @@ Postgresql database URIs come in the format `postgresql://[user[:password]@][net
 
 Create a virtual environment in which to manage app dependencies, `cd` to the project directory and run
 
-```shell
+```bash
 ~ python3 -m venv <venv_name>
 ```
 
@@ -76,7 +76,7 @@ This will create a directory on the project root by the name you choose, contain
 
 Enter the virtual environment
 
-```shell
+```bash
 ~ source <venv_name>/bin/activate
 ``` 
  
@@ -84,20 +84,20 @@ Enter the virtual environment
 
 To install the dependencies to a virtual environment just for this project run 
 
-```shell
+```bash
 ~ pip install -r requirements.txt
 ```
 
 Nearly there, all you need to do now is tell Flask where to find the application and the environment
 
-```shell
+```bash
 ~ export FLASK_APP=api
 ~ export FLASK_ENV=development
 ```
 
 And you're done! Run the application
 
-```shell
+```bash
 flask run
 ```
 
@@ -110,7 +110,7 @@ Now you can make requests to the app however you please, the following commands 
 
 Run `~ deactivate` to exit the venv, when starting up the app again you must activate the venv and set the flask environment variables again
 
-```shell
+```bash
 ~ source <venv_name>/bin/activate
 ~ export FLASK_APP=api
 ~ export FLASK_ENV=development
@@ -121,7 +121,7 @@ Run `~ deactivate` to exit the venv, when starting up the app again you must act
 
 Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Make sure the virtual environment has been activated then run the tests with:
 
-```shell
+```bash
 ~ python -m pytest --cov=api test/
 ```
 
