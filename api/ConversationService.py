@@ -10,6 +10,36 @@ def find_or_create_conversation(user_ids, db_session=db_session):
     conversation_id = get_conversation_id(user_ids, db_session=db_session)
     return create_conversation(user_ids, db_session=db_session) if not conversation_id else conversation_id
 
+def conversation_messages(conversation_id, db_session=db_session):
+    messages = db_session.query(Message)\
+    .filter(Message.conversation_id==conversation_id)\
+    .order_by(Message.created_at)\
+    .all()
+
+    return parse_conversation_messages(messages)
+
+def latest_conversations(user_id, db_session=db_session):
+    conversations = db_session.query(JoinTable.conversation_id)\
+        .filter(JoinTable.user_id==user_id)\
+        .all()
+
+    response = map(lambda convo_id: construct_conversation(convo_id, user_id) ,conversations)
+    return list(response)
+
+def create_and_commit_message(json_data, conversation_id, db_session=db_session):
+    db_session.add(Message(sender_id = json_data['sender_id'], 
+                          conversation_id = conversation_id, 
+                          content = json_data['content']))
+    
+    try:
+        db_session.commit()
+        return { "saved": True }
+    except SQLAlchemyError as e:
+        error = str(e.orig).split('\n')[0]
+        return { "saved": False, "error": error }
+
+''' Private Methods '''
+
 def get_conversation_id(user_ids, db_session=db_session):
     first_query = f"""SELECT DISTINCT(conversation_id)
                         FROM conversation_user_join
@@ -59,14 +89,6 @@ def convert_to_string(arr):
         ), "]", ")"
     )
 
-def conversation_messages(conversation_id, db_session=db_session):
-    messages = db_session.query(Message)\
-    .filter(Message.conversation_id==conversation_id)\
-    .order_by(Message.created_at)\
-    .all()
-
-    return parse_conversation_messages(messages)
-
 def parse_conversation_messages(sqlalchemy_messages):
     response = []
     for message in sqlalchemy_messages:
@@ -99,24 +121,3 @@ def construct_conversation(convo_id, user_id):
         "participant_ids": interlocutors,
         "last_message": latest_message[0] if latest_message else None
     }
-
-def get_latest_conversations(user_id, db_session=db_session):
-    conversations = db_session.query(JoinTable.conversation_id)\
-        .filter(JoinTable.user_id==user_id)\
-        .all()
-
-    response = map(lambda convo_id: construct_conversation(convo_id, user_id) ,conversations)
-
-    return list(response)
-
-def create_and_commit_message(json_data, conversation_id, db_session=db_session):
-    db_session.add(Message(sender_id = json_data['sender_id'], 
-                          conversation_id = conversation_id, 
-                          content = json_data['content']))
-    
-    try:
-        db_session.commit()
-        return { "saved": True }
-    except SQLAlchemyError as e:
-        error = str(e.orig).split('\n')[0]
-        return { "saved": False, "error": error }

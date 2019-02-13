@@ -20,5 +20,5 @@ def post_messages():
 
 @conversation_api.route("/conversation/<int:user_id>/latest", methods=['GET'])
 def get_conversation(user_id):
-    response = ConversationService.get_latest_conversations(user_id)
+    response = ConversationService.latest_conversations(user_id)
     return jsonify(response)
