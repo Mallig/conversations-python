@@ -3,7 +3,7 @@ from api import db
 from api.models import Message, Conversation
 from api.models import  ConversationUserJoin as JoinTable
 from sqlalchemy.exc import SQLAlchemyError
-from api.conversation_service import ConversationService
+from api import ConversationService
 
 conversation_api = Blueprint('conversation_api', __name__)
 db_session = db.session

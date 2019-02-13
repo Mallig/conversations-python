@@ -1,5 +1,5 @@
 import pytest
-from api.conversation_service import ConversationService
+from api import ConversationService
 from api import db
 from api.models import Conversation
 from flask import current_app
