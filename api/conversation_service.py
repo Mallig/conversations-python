@@ -6,10 +6,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 db_session = db.session
 
-def find_or_create_conversation(user_ids, db_session=db_session):
-    conversation_id = get_conversation_id(user_ids, db_session=db_session)
-    return conversation_id or create_conversation(user_ids, db_session=db_session)
-
 def conversation_messages(conversation_id, db_session=db_session):
     messages = db_session.query(Message)\
     .filter(Message.conversation_id==conversation_id)\
@@ -26,7 +22,11 @@ def latest_conversations(user_id, db_session=db_session):
     response = map(lambda convo_id: construct_conversation(convo_id, user_id) ,conversations)
     return list(response)
 
-def create_and_commit_message(json_data, conversation_id, db_session=db_session):
+def create_and_commit_message(json_data, db_session=db_session):
+    user_ids = json_data['receiver_ids']
+    user_ids.append(json_data['sender_id'])
+    conversation_id = find_or_create_conversation(user_ids)
+
     db_session.add(Message(sender_id = json_data['sender_id'], 
                           conversation_id = conversation_id, 
                           content = json_data['content']))
@@ -39,6 +39,10 @@ def create_and_commit_message(json_data, conversation_id, db_session=db_session)
         return { "saved": False, "error": error }
 
 ''' Private Methods '''
+
+def find_or_create_conversation(user_ids, db_session=db_session):
+    conversation_id = get_conversation_id(user_ids, db_session=db_session)
+    return conversation_id or create_conversation(user_ids, db_session=db_session)
 
 def get_conversation_id(user_ids, db_session=db_session):
     first_query = f"""SELECT DISTINCT(conversation_id)
