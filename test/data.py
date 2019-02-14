@@ -11,6 +11,19 @@ conversation_seed = [
     }
 ]
 
+conversation_request = [
+    {
+        "content":"test message",
+        "id":1,
+        "sender_id":1
+    },
+    {
+        "content":"test reply",
+        "id":2,
+        "sender_id":2
+    }
+]
+
 latest_conversations_seed = [
     {
         "sender_id": 1,

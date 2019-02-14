@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from api.database import db
 
 @pytest.fixture(scope='session')
-def _db():
+def _db(db=db):
     return db
 
 @pytest.fixture(scope='session')
@@ -17,17 +17,16 @@ def client(app):
     return app.test_client()
 
 @pytest.fixture
-def setup_database():
+def setup_database(db=db):
     clear_database_tables(db)
-    seed_database
 
 @pytest.fixture
-def seed_database():
+def seed_database(db=db):
     add_one_conversation(db)
 
 @pytest.fixture
-def seed_with_conversations():
-    add_latest_conversations()
+def seed_with_conversations(db=db):
+    add_latest_conversations(db)
 
 @pytest.fixture(scope='session')
 def database(request):
@@ -65,7 +64,7 @@ def add_one_conversation(db):
             content = message['content']
         ))
 
-def add_latest_conversations():
+def add_latest_conversations(db):
     from api.models import Message, Conversation, ConversationUserJoin
     from data import latest_conversations_seed
     for message in latest_conversations_seed:

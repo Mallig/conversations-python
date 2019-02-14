@@ -8,7 +8,7 @@ db_session = db.session
 
 def find_or_create_conversation(user_ids, db_session=db_session):
     conversation_id = get_conversation_id(user_ids, db_session=db_session)
-    return create_conversation(user_ids, db_session=db_session) if not conversation_id else conversation_id
+    return conversation_id or create_conversation(user_ids, db_session=db_session)
 
 def conversation_messages(conversation_id, db_session=db_session):
     messages = db_session.query(Message)\
