@@ -1,1 +1,1 @@
-web: source venv/bin/activate && pip3 install -r requirements.txt && export FLASK_APP=api export FLASK_ENV=production && flask run
+web: python3 -m venv venv && source venv/bin/activate && pip3 install -r requirements.txt && export FLASK_APP=api export FLASK_ENV=production && flask run
