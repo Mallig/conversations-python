@@ -1,9 +1,10 @@
 ## Conversation API - Python
 
-This is a remake of an API originally created in Ruby. It's not too complex so thought it would be a good opportunity to learn some Python.
-The purpose of this API is to provide a clone of WhatsApp with groups of messages between users. These messages will be displayed through a frontend built using React. At the moment there are two different groups of messages the API needs to be able to return, all messages between two users and a users most recent message for each of their conversations.
+This is a remake of an API originally [created in Ruby](https://github.com/Mallig/whatsapp-conversations). It's not too complex so thought it would be a good opportunity to learn some Python.
+The purpose of this API is to provide a clone of WhatsApp with groups of messages between users. These messages will be displayed through a frontend [built using React](https://github.com/Mallig/whatsapp). At the moment there are two different groups of messages the API needs to be able to return, all messages between two users and a users most recent message for each of their conversations.
 
 This project is using Flask, Postgresql with SQLAlchemy.
+[Hosted on Heroku](https://conversations-python.herokuapp.com/conversation/1/id)
 
 ## How it Works
 
@@ -12,7 +13,7 @@ The API utilises the SQLAlchemy ORM to create three models inside a Postgresql d
  * Conversation
  * ConversationUserJoin
 
-A Separate Ruby API exists to handle user models, using a different database, therefore the join table has to be manually created and maintained.
+A [Separate Ruby API](https://github.com/Mallig/whatsapp-users) (to be converted to Kotlin) exists to handle user models, using a different database, therefore the join table has to be manually created and maintained.
 
 Users sign in on the front end React app, the app sends a GET request to the python API for the most recent conversations the current user is in. The app also GET requests the messages for the most recent conversation the user had. Users can then send POST requests to create new messages.
 
@@ -124,8 +125,11 @@ Before running the tests you must create a test database and config file
 ```bash
 ~ touch instance/test_config.py
 ~ echo "SQLALCHEMY_DATABASE_URI='postgresql://localhost:5432/conversation_python_test'" >> instance/test_config.py
+~ echo "SQLALCHEMY_TRACK_MODIFICATIONS=False" >> instance/test_config.py
 ~ createdb conversation_python_test
 ```
+(the second environment variable is set to suppress a warning regarding overhead, the tests will run without setting it.)
+
 Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Make sure the virtual environment has been activated then run the tests
 
 ```bash
