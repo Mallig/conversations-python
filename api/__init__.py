@@ -16,12 +16,6 @@ def create_app(config='config.py', db=db):
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
         app.secret_key = os.environ.get('SECRET_KEY')
 
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-    # add app to db instance
     from api import models
     db.init_app(app)
     db.app = app
