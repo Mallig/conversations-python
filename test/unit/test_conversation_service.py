@@ -13,8 +13,8 @@ class TestConversationService:
         conversation = conversation_service.find_or_create_conversation([1,3], db_session)
         assert conversation == 1
 
-    def test_conversation_messages(self, client, setup_database, seed_database):
-        messages = conversation_service.conversation_messages(1)
+    def test_conversation_messages(self, client, setup_database, seed_database, db_session):
+        messages = conversation_service.conversation_messages(1, db_session)
         assert messages == conversation_request
 
     # def test_create_and_commit_message(self, client, setup_database):

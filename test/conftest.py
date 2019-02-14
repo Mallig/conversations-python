@@ -63,6 +63,8 @@ def add_one_conversation(db):
             conversation_id = convo.id,
             content = message['content']
         ))
+    
+    db.session.commit()
 
 def add_latest_conversations(db):
     from api.models import Message, Conversation, ConversationUserJoin
