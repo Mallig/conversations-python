@@ -13,7 +13,7 @@ def create_app(config='config.py', db=db):
     if config:
         app.config.from_pyfile(config)
     else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = ENV['DATABASE_URL']
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
     try:
         os.makedirs(app.instance_path)
