@@ -124,8 +124,11 @@ Before running the tests you must create a test database and config file
 ```bash
 ~ touch instance/test_config.py
 ~ echo "SQLALCHEMY_DATABASE_URI='postgresql://localhost:5432/conversation_python_test'" >> instance/test_config.py
+~ echo "SQLALCHEMY_TRACK_MODIFICATIONS=False" >> instance/test_config.py
 ~ createdb conversation_python_test
 ```
+(the second environment variable is set to suppress a warning regarding overhead, the tests will run without setting it.)
+
 Tests are written using pytest with help from pytest-flask, and coverage from pytest-cov. Make sure the virtual environment has been activated then run the tests
 
 ```bash
