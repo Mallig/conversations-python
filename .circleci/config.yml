@@ -31,10 +31,6 @@ jobs:
             - ".venv"
             - "/usr/local/bin"
             - "/usr/local/lib/python3.7/site-packages"
-      - run:
-          command: |
-            source venv/bin/activate
-            python -m pytest --cov=api test/
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test-reports
           destination: test-reports
