@@ -9,7 +9,7 @@ def _db(db=db):
 
 @pytest.fixture(scope='session')
 def app(db=db):
-    app = create_app(None, db)
+    app = create_app('test_config.py', db)
     return app
 
 @pytest.fixture

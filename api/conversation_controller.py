@@ -18,3 +18,7 @@ def post_message():
 def get_latest_conversations(user_id):
     response = conversation_service.latest_conversations(user_id)
     return jsonify(response)
+
+@conversation_api.route("/")
+def welcome():
+    return "Whatsapp Conversation 2 Python Boogaloo"
