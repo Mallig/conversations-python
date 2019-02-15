@@ -61,3 +61,51 @@ latest_conversations_seed = [
         "content": "test message"
     }
 ]
+
+latest_conversations_response = [
+    {
+        "conversation_id": 1,
+        "participant_ids": [
+                2
+            ],
+        "last_message": "test message"
+    },
+    {
+        "conversation_id": 2,
+        "participant_ids": [
+                3
+            ],
+        "last_message": "test message"
+    },
+    {
+        "conversation_id": 3,
+        "participant_ids": [
+                4
+            ],
+        "last_message": "test message"
+    },
+    {
+        "conversation_id": 4,
+        "participant_ids": [
+                5
+            ],
+        "last_message": "test message"
+    },
+    {
+        "conversation_id": 5,
+        "participant_ids": [
+                6
+            ],
+        "last_message": "test message"
+    }
+]
+
+create_message_response = {
+    "succeeded": {
+        "saved": True
+    },
+    "failed": {
+        "saved": False,
+        'error': 'null value in column "content" violates not-null constraint'
+    }
+}

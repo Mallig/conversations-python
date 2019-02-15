@@ -66,7 +66,8 @@ def add_one_conversation(db):
     
     db.session.commit()
 
-def add_latest_conversations(db):
+@pytest.fixture
+def add_latest_conversations(db=db):
     from api.models import Message, Conversation, ConversationUserJoin
     from data import latest_conversations_seed
     for message in latest_conversations_seed:
