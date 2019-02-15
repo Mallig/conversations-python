@@ -30,7 +30,7 @@ jobs:
             - "/usr/local/lib/python3.7/site-packages"
       - run:
           environment:
-            SQLALCHEMY_DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+            SQLALCHEMY_DATABASE_URI: postgresql://root@localhost/circle_test?sslmode=disable
           name: Run Tests
           command: |
             mkdir instance
