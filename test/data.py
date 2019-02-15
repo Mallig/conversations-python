@@ -100,6 +100,22 @@ latest_conversations_response = [
     }
 ]
 
+valid_json_message = { 
+    "content": "test message",
+    "sender_id": 1,
+    "receiver_ids": [
+        2
+    ]
+}
+
+invalid_json_message = { 
+    "content": None,
+    "sender_id": 1,
+    "receiver_ids": [
+        2
+    ]
+}
+
 create_message_response = {
     "succeeded": {
         "saved": True
