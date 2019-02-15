@@ -15,7 +15,7 @@ class TestConversationService:
         commit_response = conversation_service.create_and_commit_message(invalid_json_message, db_session)
         assert commit_response == create_message_response["failed"]
 
-    def test_get_latest_conversations(self, client, setup_database, add_latest_conversations, db_session):
+    def test_get_latest_conversations(self, client, setup_database, seed_with_conversations, db_session):
         response = conversation_service.latest_conversations(1, db_session)
         assert response == latest_conversations_response
 

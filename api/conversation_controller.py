@@ -9,12 +9,12 @@ def get_single_conversation_by_id(conversation_id):
     return jsonify(response)
 
 @conversation_api.route("/messages", methods=['POST'])
-def post_messages():
+def post_message():
     json_data = request.get_json()
     response = conversation_service.create_and_commit_message(json_data)
     return jsonify(response)
 
 @conversation_api.route("/conversation/<int:user_id>/latest", methods=['GET'])
-def get_conversation(user_id):
+def get_latest_conversations(user_id):
     response = conversation_service.latest_conversations(user_id)
     return jsonify(response)

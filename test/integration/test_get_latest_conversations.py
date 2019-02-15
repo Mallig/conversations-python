@@ -3,7 +3,7 @@ from flask import url_for
 
 class TestApp:
     def test_get_latest_conversations(self, client, setup_database, seed_with_conversations):
-        res = client.get(url_for('conversation_api.get_conversation', user_id=1))
+        res = client.get(url_for('conversation_api.get_latest_conversations', user_id=1))
         assert res.status_code == 200
         assert res.json == [
                             {
