@@ -29,12 +29,11 @@ jobs:
             - "/usr/local/bin"
             - "/usr/local/lib/python3.7/site-packages"
       - run:
-          environment:
-            SQLALCHEMY_DATABASE_URI: postgresql://root@localhost/circle_test?sslmode=disable
           name: Run Tests
           command: |
             mkdir instance
             touch instance/test_config.py
+            echo "SQLALCHEMY_DATABASE_URI='postgresql://root@localhost/circle_test?sslmode=disable'" >> instance/test_config.py
             source venv/bin/activate
             python -m pytest --cov=api test/
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
