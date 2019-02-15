@@ -116,6 +116,11 @@ invalid_json_message = {
     ]
 }
 
+post_message_headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+}
+
 create_message_response = {
     "succeeded": {
         "saved": True
