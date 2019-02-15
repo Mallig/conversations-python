@@ -18,3 +18,5 @@ class TestConversationService:
     def test_get_latest_conversations(self, client, setup_database, add_latest_conversations, db_session):
         response = conversation_service.latest_conversations(1, db_session)
         assert response == latest_conversations_response
+
+    # TODO: Edge case tests for finding conversation ids. Populate database with multi-user conversations and test messages are put in correct convo
